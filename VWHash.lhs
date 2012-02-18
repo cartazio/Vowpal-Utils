@@ -4,7 +4,7 @@ import Data.Word
 --import Data.Digest.Murmur32 -- (asWord32,hash32AddWord32,Hash32)
 import Data.Int 
 import Data.Bits
-import Data.Bytestring
+import qualified  Data.ByteString as B 
 
 -- hash32end and hash32AddWord32 are from the hackage murmur-hash lib 
 
@@ -18,13 +18,24 @@ hash32End ( h) =
       h3 = h2 `xor` (h2 `shiftR` 15)
   in  h3
 
-bStringAsWords :: B.Bytestring -> ([Word32], Maybe Word32)
+bStringAsWords :: B.ByteString -> ([Word32], Maybe Word32)
 bStringAsWords str = chew [] $! B.unpack $! str 
     where
         chew sofar [] = (reverse sofar, Nothing)
         chew sofar (a:[]) = (reverse sofar, Just $ adjust [a]) 
         chew sofar (a:b:[]) = (reverse sofar, Just $ adjust [a,b])
-        chew sofar (a:b:c:[]) = (reverse sofar , )
+        chew sofar (a:b:c:[]) = (reverse sofar , Just $ adjust [a,b,c])
+        chew sofar (a:b:c:d : rest) = chew (adjust [a,b,c,d]) rest 
+        --adjust :: [Word8]-> Word32
+        adjust (a:b:c:d:[]) = fromIntegral a + ( fromIntegral b `shiftL` 8) +
+                    (fromIntegral c `shiftL` 16 ) + (fromIntegral d `shiftL` 24)
+        adjust (a:b:c:[]) =  fromIntegral a + ( fromIntegral b `shiftL` 8) +
+                                (fromIntegral c `shiftL` 16 )            
+
+        adjsut (a:b:[]) = fromIntegral a + ( fromIntegral b `shiftL` 8)
+        adjust ([a]) = fromIntegral a 
+
+        adjust _ = "error, input must be a list with length 1-4"
 
 hash32AddWord32 :: Word32 -> Word32 -> Word32
 hash32AddWord32 k ( h) =
