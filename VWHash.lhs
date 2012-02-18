@@ -1,5 +1,5 @@
 \begin{code}
-{-# OPTIONS -XMultiParamTypeClasses #-}
+{-# OPTIONS -XMultiParamTypeClasses -XBangPatterns#-}
 module Data.Digest.VowPal where
 import Data.Word
 --import Data.Digest.Murmur32 -- (asWord32,hash32AddWord32,Hash32)
@@ -7,7 +7,7 @@ import Data.Int
 import Data.Bits
 import qualified  Data.ByteString as B 
 import qualified Data.ByteString.Char8 as C (pack) 
-import Data.Foldable (foldl')
+import Data.Foldable (foldl',Foldable)
 import qualified Data.ByteString.UTF8 as U 
 
 -- hash32end and hash32AddWord32 are from the hackage murmur-hash lib 
@@ -30,10 +30,13 @@ bStringAsWords str = chew [] $! B.unpack $! str
         chew sofar [a] = (reverse sofar, Just $ adjust [a]) 
         chew sofar [a,b] = (reverse sofar, Just $ adjust [a,b])
         chew sofar [a,b,c] = (reverse sofar , Just $ adjust [a,b,c])
-        chew sofar (a:b:c:d : rest) = chew (adjust [a,b,c,d] : sofar) rest 
-        adjust :: [Word8]-> Word32
-        adjust [a,b,c,d] = fromIntegral a + ( fromIntegral b `shiftL` 8) +
+        chew sofar (a:b:c:d : rest) = chew (quadChange (a,b,c,d) : sofar) rest  -- something wrong happens here?
+        quadChange :: (Word8,Word8,Word8,Word8)->Word32
+        quadChange (a,b,c,d)=fromIntegral a + ( fromIntegral b `shiftL` 8) +
                     (fromIntegral c `shiftL` 16 ) + (fromIntegral d `shiftL` 24)
+        adjust :: [Word8]-> Word32
+        --adjust [a,b,c,d] = fromIntegral a + ( fromIntegral b `shiftL` 8) +
+        --            (fromIntegral c `shiftL` 16 ) + (fromIntegral d `shiftL` 24)
         adjust [a,b,c] =  fromIntegral a + ( fromIntegral b `shiftL` 8) +
                                 (fromIntegral c `shiftL` 16 )            
         adjust [a,b] = fromIntegral a + ( fromIntegral b `shiftL` 8)
@@ -65,22 +68,29 @@ hashBase =  97562527
 
 
 hashWithSeed :: Word32 -> B.ByteString -> Word32
-hashWithSeed seed str =  hash32End lastState  .&. makeMask 18 -- default size is 18
+hashWithSeed seed str =  hash32End lastState  -- .&. makeMask 18 -- default size is 18
             where
                 h = seed `xor` ( fromIntegral $! B.length str) 
                 (ls, optRem)= bStringAsWords str
-                semilastState= foldl' hash32AddWord32 h ls
+                semilastState= hash32AddFoldable ls h 
                 lastState = 
                     case optRem of 
-                            Nothing -> semilastState
+                            Nothing -> semilastState -- * murmur_m  --- not sure if mul is needed here
                             Just a -> (semilastState `xor` a ) * murmur_m  
 
+hash32AddFoldable :: ( Foldable c) => c Word32-> Word32->Word32
+hash32AddFoldable c !h0 = foldl' f h0 c
+  where f h a = hash32AddWord32 a h
+
+--this seems correct
 hashFeature :: String  ->Word32
-hashFeature str = hashWithSeed 0 $ U.fromString  str 
+hashFeature str =( hashWithSeed 0 $ U.fromString  str)  .&. makeMask 18
 
 hashClass :: String -> Word32
 hashClass str = hashWithSeed hashBase $ U.fromString str 
 
+-- Hash  - CLASS , FEATURE NAME
 hashFeatureClass :: String -> String -> Word32
-hashFeatureClass str cls = hashWithSeed (hashFeature  cls) $! U.fromString str  
+hashFeatureClass clss str  = (hashWithSeed (hashFeature  clss) $! 
+                                U.fromString str)   .&. makeMask 18
 \end{code}

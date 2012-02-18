@@ -4,6 +4,9 @@ then use the hash value of that (called channel_hash)
 note::  mask is just  the first k bits set to 1 (default is 18)
 
 
+seems to only work on classless with  at most 3 chars, seesm to me that this means
+
+
 /Users/carter/Desktop/vowpal_wabbit/vowpalwabbit/hash.h:
     5   */
     6  
