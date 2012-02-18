@@ -1,0 +1,125 @@
+
+basically, hash feature group name with hash_base as seed
+then use the hash value of that (called channel_hash)
+note::  mask is just  the first k bits set to 1 (default is 18)
+
+
+/Users/carter/Desktop/vowpal_wabbit/vowpalwabbit/hash.h:
+    5   */
+    6  
+    7: const uint32_t hash_base = 97562527;
+    8  uint32_t uniform_hash( const void *key, size_t length, uint32_t initval);
+    9  
+
+---------------
+    /Users/carter/Desktop/vowpal_wabbit/vowpalwabbit/parse_example.cc:
+  171   if (audit)
+  172     base = c_string_of_substring(p->name[0]);
+  173:  channel_hash = p->hasher(p->name[0], hash_base);
+  174        }
+  175      else
+
+---------------
+
+  /Users/carter/Desktop/vowpal_wabbit/vowpalwabbit/parse_example.cc:
+  154      
+  155      float channel_v = 1.;
+  156:     size_t channel_hash;
+  157      char* base=NULL;
+  158      size_t index = 0;
+  ...
+  171   if (audit)
+  172     base = c_string_of_substring(p->name[0]);
+  173:  channel_hash = p->hasher(p->name[0], hash_base);
+  174        }
+  175      else
+  ...
+  184       base[1]='\0';
+  185     }
+  186:  channel_hash = 0;
+  187        }
+  188   
+  ...
+  192        v *= channel_v;
+  193  
+  194:       size_t word_hash = (p->hasher(p->name[0], channel_hash)) & mask;
+  195        feature f = {v,(uint32_t)word_hash};
+  196        ae->sum_feat_sq[index] += v*v;
+  ...
+  208     v *= channel_v;
+  209  
+  210:    size_t word_hash = (p->hasher(p->name[0], channel_hash)) & mask;
+  211        
+  212     char* feature = c_string_of_substring(p->name[0]);
+
+
+implementation of hash function is basically murmur hash
+// Tweaked for VW and contributed by Ariel Faigon.
+// Original at: http://murmurhash.googlepages.com/
+//
+// Based on MurmurHash2, by Austin Appleby
+//
+// Note - This code makes a few assumptions about how your machine behaves:
+//
+// 1. We can read a 4-byte value from any address without crashing
+//    (i.e non aligned access is supported) - this is not a problem
+//    on Intel/x86/AMD64 machines (including new Macs)
+// 2. sizeof(int) == 4
+//
+// And it has a few limitations -
+//  1. It will not work incrementally.
+//  2. It will not produce the same results on little-endian and
+//     big-endian machines.
+//
+#include <stdint.h> /* defines uint32_t etc */
+#include <sys/types.h>  /* defines size_t */
+
+#define MIX(h,k,m) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
+
+uint32_t uniform_hash( const void *key, size_t len, uint32_t seed)
+{
+    // 'm' and 'r' are mixing constants generated offline.
+    // They're not really 'magic', they just happen to work well.
+
+    const unsigned int m = 0x5bd1e995;
+    const int r = 24;
+
+    // Initialize the hash to a 'random' value
+
+    unsigned int h = seed ^ len;
+
+    // Mix 4 bytes at a time into the hash
+
+    const unsigned char * data = (const unsigned char *)key;
+
+    while (len >= 4) {
+  unsigned int k = *(unsigned int *)data;
+
+  k *= m;
+  k ^= k >> r;
+  k *= m;
+
+  h *= m;
+  h ^= k;
+
+  data += 4;
+  len -= 4;
+    }
+
+    // Handle the last few bytes of the input array
+    switch (len) {
+  case 3: h ^= data[2] << 16;
+  case 2: h ^= data[1] << 8;
+  case 1: h ^= data[0];
+    h *= m;
+    };
+
+    // Do a few final mixes of the hash to ensure the last few
+    // bytes are well-incorporated.
+    h ^= h >> 13;
+    h *= m;
+    h ^= h >> 15;
+
+    return h;
+}
+
