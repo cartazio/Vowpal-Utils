@@ -6,6 +6,7 @@ import Data.Word
 import Data.Int 
 import Data.Bits
 import qualified  Data.ByteString as B 
+import Data.Foldable (foldl')
 
 -- hash32end and hash32AddWord32 are from the hackage murmur-hash lib 
 
@@ -59,4 +60,21 @@ makeMask ind = ( one  `shiftL` ind)   - 1
 
 hashBase :: Word32 
 hashBase =  97562527
+
+
+hashWithSeed :: Word32 -> B.ByteString -> Word32
+hashWithSeed seed str =  hash32End lastState  .&. makeMask 18 -- default size is 18
+            where
+                h = seed `xor` ( fromIntegral $! B.length str) 
+                (ls, optRem)= bStringAsWords str
+                semilastState= foldl' hash32AddWord32 h ls
+                lastState = 
+                    case optRem of 
+                            Nothing -> semilastState
+                            Just a -> (semilastState `xor` a ) * murmur_m  
+
+hashFeature :: B.ByteString ->Word32
+hashFeature str = hashWithSeed hashBase str 
+
+hashFeatureClass str cls = hashWithSeed (hashFeature cls) str  
 \end{code}
