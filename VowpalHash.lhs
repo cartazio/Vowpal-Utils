@@ -1,6 +1,6 @@
 \begin{code}
 {-# OPTIONS -XMultiParamTypeClasses -XBangPatterns#-}
-module Data.Digest.VowPal where
+module Data.Digest.VowpalHash where
 import Data.Word
 --import Data.Digest.Murmur32 -- (asWord32,hash32AddWord32,Hash32)
 import Data.Int 
@@ -43,6 +43,7 @@ bStringAsWords str = chew [] $! B.unpack $! str
         adjust  [a] = fromIntegral a
         adjust _ = error "error, input must be a list with length 1-4"
 
+--- takes next word & current seed -> new seed 
 hash32AddWord32 :: Word32 -> Word32 -> Word32
 hash32AddWord32 k ( h) =
   let k1 = k * murmur_m
@@ -91,6 +92,6 @@ hashClass str = hashWithSeed hashBase $ U.fromString str
 
 -- Hash  - CLASS , FEATURE NAME
 hashFeatureClass :: String -> String -> Word32
-hashFeatureClass clss str  = (hashWithSeed (hashFeature  clss) $! 
+hashFeatureClass clss str  = (hashWithSeed (hashClass  clss) $! 
                                 U.fromString str)   .&. makeMask 18
 \end{code}
