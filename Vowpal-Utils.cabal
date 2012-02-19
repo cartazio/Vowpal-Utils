@@ -10,10 +10,10 @@ Name:                VW-Utils
 Version:             0.1
 
 -- A short (one-line) description of the package.
-Synopsis:            Tools for manipulating models produced by vowpal wabbit
+Synopsis:            Tools for vowpal wabbit models
 
 -- A longer description of the package.
--- Description:         
+ Description: Some basic tools for making use of Vowpal Wabbit easier.        
 
 -- URL for the project homepage or repository.
 Homepage:           https://github.com/cartazio/Vowpal-Utils
@@ -32,7 +32,7 @@ Author:              Carter Tazio Schonwald
 Maintainer:          first dot last at gmail dot com
 
 -- A copyright notice.
--- Copyright:           
+ Copyright:     Carter Schonwald  2012-      
 
 Category:            Math
 
@@ -48,7 +48,7 @@ Cabal-version:       >=1.2
 
 Library
   -- Modules exported by the library.
-  Exposed-modules:     Data.Diget.VowpalHash
+  Exposed-modules:     Data.Digest.VowpalHash
   
   -- Packages needed in order to build this package.
   -- Build-depends:       
