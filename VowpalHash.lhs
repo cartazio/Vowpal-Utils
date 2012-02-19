@@ -7,11 +7,11 @@ Module      : Data.Digest.VowpalHash
 Copyright   : (c) Carter Tazio Schonwald
 License     : BSD-style
 
-Maintainer  : nominolo@gmail.com
+Maintainer  :  first dot last @gmail.com
 Stability   : experimental
 Portability : portable
 
-uses 
+
 -}
 
 
@@ -137,6 +137,10 @@ now lets figure out how to do the same with quadratic features!
 quadraticConstant :: Word32
 quadraticConstant   = 27942141  
 
+-- pairs of features appear twice in general, need to 
+-- hashFeaturePair (a,b) (c,d) != hashFeaturePair (c,d) (a,b)
+-- (Class,Feature)
+hashFeaturePair :: (String,String)-> (String,String)-> Word32
 hashFeaturePair (classa,stra) (classb,strb) = ( hashFeatureClass classa stra   * quadraticConstant + hashFeatureClass classb strb ) .&. makeMask 18
 
 
