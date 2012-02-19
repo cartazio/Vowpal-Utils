@@ -1,5 +1,20 @@
 \begin{code}
 {-# OPTIONS -XMultiParamTypeClasses -XBangPatterns#-}
+
+
+{-|
+Module      : Data.Digest.VowpalHash
+Copyright   : (c) Carter Tazio Schonwald
+License     : BSD-style
+
+Maintainer  : nominolo@gmail.com
+Stability   : experimental
+Portability : portable
+
+uses 
+-}
+
+
 module Data.Digest.VowpalHash where
 import Data.Word
 --import Data.Digest.Murmur32 -- (asWord32,hash32AddWord32,Hash32)
@@ -90,8 +105,40 @@ hashFeature str =( hashWithSeed 0 $ U.fromString  str)  .&. makeMask 18
 hashClass :: String -> Word32
 hashClass str = hashWithSeed hashBase $ U.fromString str 
 
--- Hash  - CLASS , FEATURE NAME
+--- hash for the constant feature, 
+constantHash :: Word32
+constantHash = 11650396 .&. makeMask 18
+
+{-const int quadratic_constant = 27942141;
+const int constant = 11650396;
+need to check if 
+-}
+
+
+-- HashFeatureClass ::  CLASS , FEATURENAME-> hash
+-- if theres no class name or " ", use  HashFeature instead!!
 hashFeatureClass :: String -> String -> Word32
-hashFeatureClass clss str  = (hashWithSeed (hashClass  clss) $! 
-                                U.fromString str)   .&. makeMask 18
+hashFeatureClass clss feature  = (hashWithSeed (hashClass  clss) $! 
+                                U.fromString feature )   .&. makeMask 18
 \end{code}
+
+
+now lets figure out how to do the same with quadratic features!
+ const int quadratic_constant = 27942141;   
+ 88:   size_t stride = global.stride; this doesn't matter actually
+  size_t halfhash = quadratic_constant * page_feature.weight_index;
+  HASH == (halfhash + ele->weight_index) & mask
+  
+
+
+
+\begin{code}
+
+quadraticConstant :: Word32
+quadraticConstant   = 27942141  
+
+hashFeaturePair (classa,stra) (classb,strb) = ( hashFeatureClass classa stra   * quadraticConstant + hashFeatureClass classb strb ) .&. makeMask 18
+
+
+
+\end{code}  
