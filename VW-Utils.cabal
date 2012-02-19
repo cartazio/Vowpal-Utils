@@ -48,7 +48,7 @@ Cabal-version:       >=1.2
 
 Library
   -- Modules exported by the library.
-  Exposed-modules:     VowpalHash
+  Exposed-modules:     Data.Diget.VowpalHash
   
   -- Packages needed in order to build this package.
   -- Build-depends:       
