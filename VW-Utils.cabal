@@ -16,7 +16,7 @@ Synopsis:            Tools for manipulating models produced by vowpal wabbit
 -- Description:         
 
 -- URL for the project homepage or repository.
-Homepage:            ___github.com
+Homepage:           https://github.com/cartazio/Vowpal-Utils
 
 -- The license under which the package is released.
 License:             BSD3
