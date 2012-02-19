@@ -1,5 +1,5 @@
 \begin{code}
-{-# OPTIONS -XMultiParamTypeClasses -XBangPatterns#-}
+{-# LANGUAGE BangPatterns #-}
 
 
 {-|
@@ -11,7 +11,8 @@ Maintainer  :  first dot last @gmail.com
 Stability   : experimental
 Portability : portable
 
-
+based on murmur-hash2 implementation in the murmur-hash package
+and also 
 -}
 
 
