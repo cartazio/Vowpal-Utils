@@ -24,7 +24,7 @@ import Data.Bits
 import qualified  Data.ByteString as B 
 import qualified Data.ByteString.Char8 as C (pack) 
 import Data.Foldable (foldl',Foldable)
-import qualified Data.ByteString.UTF8 as U 
+
 
 -- hash32end and hash32AddWord32 are from the hackage murmur-hash lib 
 
@@ -101,10 +101,10 @@ hash32AddFoldable c !h0 = foldl' f h0 c
 
 --this seems correct
 hashFeature :: String  ->Word32
-hashFeature str =( hashWithSeed 0 $ U.fromString  str)  .&. makeMask 18
+hashFeature str =( hashWithSeed 0 $ B.unpack  str)  .&. makeMask 18
 
 hashClass :: String -> Word32
-hashClass str = hashWithSeed hashBase $ U.fromString str 
+hashClass str = hashWithSeed hashBase $ C.pack str 
 
 --- hash for the constant feature, 
 constantHash :: Word32
