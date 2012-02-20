@@ -49,9 +49,9 @@ source-repository head
     location: git://github.com/cartazio/Vowpal-Utils.git
 
 library
-    exposed-modules:  Data.Digest.VowpalHash
-
     build-depends: base  >= 4 && < 5  
+    exposed-modules:  Data.Digest.VowpalHash
+    
 
   -- Packages needed in order to build this package.
   -- Build-depends:       
