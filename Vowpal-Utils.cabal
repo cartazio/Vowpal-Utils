@@ -2,54 +2,57 @@
 -- options, see
 -- http://www.haskell.org/cabal/release/cabal-latest/doc/users-guide/authors.html#pkg-descr.
 -- The name of the package.
-Name:                VW-Utils
+name:                vowpal-utils
 
 -- The package version. See the Haskell package versioning policy
 -- (http://www.haskell.org/haskellwiki/Package_versioning_policy) for
 -- standards guiding when and how versions should be incremented.
-Version:             0.1
+version:             0.1
 
 -- A short (one-line) description of the package.
-Synopsis:            Tools for vowpal wabbit models
+synopsis: Vowpal Wabbit utilities 
 
 -- A longer description of the package.
- Description: Some basic tools for making use of Vowpal Wabbit easier.        
+description: Vowpal Wabbit hash and utils         
 
 -- URL for the project homepage or repository.
-Homepage:           https://github.com/cartazio/Vowpal-Utils
+homepage:           https://github.com/cartazio/Vowpal-Utils
 
 -- The license under which the package is released.
-License:             BSD3
+license:             BSD3
 
 -- The file containing the license text.
-License-file:        LICENSE
+license-file:        LICENSE
 
 -- The package author(s).
-Author:              Carter Tazio Schonwald
+author:              Carter Tazio Schonwald
 
 -- An email address to which users can send suggestions, bug reports,
 -- and patches.
-Maintainer:          first dot last at gmail dot com
+maintainer:          first dot last at gmail dot com
 
 -- A copyright notice.
- Copyright:     Carter Schonwald  2012-      
+copyright:     Carter Schonwald  Copyright (c) 2012      
 
-Category:            Math
+category:            Math
 
-Build-type:          Simple
+build-type:          Simple
 
 -- Extra files to be distributed with the package, such as examples or
 -- a README.
 -- Extra-source-files:  
 
 -- Constraint on the version of Cabal needed to build this package.
-Cabal-version:       >=1.2
+cabal-version:       >=1.6
+source-repository head
+    type: git
+    location: git://github.com/cartazio/Vowpal-Utils.git
 
+library
+    exposed-modules:  Data.Digest.VowpalHash
 
-Library
-  -- Modules exported by the library.
-  Exposed-modules:     Data.Digest.VowpalHash
-  
+    build-depends: base  >= 4 && < 5  
+
   -- Packages needed in order to build this package.
   -- Build-depends:       
   
