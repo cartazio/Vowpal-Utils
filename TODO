@@ -2,5 +2,6 @@ TODO
 
 add CSV format specifier
 add CLI options tools
+add Batch Fitter (eg, want )
 add Feature Catalogue 
-add Cross Validator for various loss functions 
+add Cross Validator / Minimizer for various loss functions 
