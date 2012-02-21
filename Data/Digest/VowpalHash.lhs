@@ -22,7 +22,7 @@ import Data.Word
 import Data.Int 
 import Data.Bits
 import qualified  Data.ByteString as B 
-import qualified Data.ByteString.Char8 as C (pack) 
+import qualified Data.ByteString.Char8 as C (pack,unpack) 
 import Data.Foldable (foldl',Foldable)
 
 
@@ -101,7 +101,7 @@ hash32AddFoldable c !h0 = foldl' f h0 c
 
 --this seems correct
 hashFeature :: String  ->Word32
-hashFeature str =( hashWithSeed 0 $ B.unpack  str)  .&. makeMask 18
+hashFeature str =( hashWithSeed 0 $ C.pack  str)  .&. makeMask 18
 
 hashClass :: String -> Word32
 hashClass str = hashWithSeed hashBase $ C.pack str 
@@ -120,7 +120,7 @@ need to check if
 -- if theres no class name or " ", use  HashFeature instead!!
 hashFeatureClass :: String -> String -> Word32
 hashFeatureClass clss feature  = (hashWithSeed (hashClass  clss) $! 
-                                U.fromString feature )   .&. makeMask 18
+                                C.pack feature )   .&. makeMask 18
 \end{code}
 
 
